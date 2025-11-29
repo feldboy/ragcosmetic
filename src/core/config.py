@@ -34,9 +34,19 @@ class Config:
         return os.environ.get("OPENROUTER_API_KEY")
     
     @staticmethod
+    def get_gemini_api_key() -> Optional[str]:
+        """Get Gemini API key from environment."""
+        return os.environ.get("GEMINI_API_KEY")
+    
+    @staticmethod
     def get_deepseek_api_key() -> Optional[str]:
         """Get DeepSeek API key from environment."""
         return os.environ.get("DEEPSEEK_API_KEY")
+
+    @staticmethod
+    def get_calendar_id() -> str:
+        """Get Google Calendar ID from environment."""
+        return os.environ.get("CALENDAR_ID", "primary")
     
     @staticmethod
     def validate_required_keys():

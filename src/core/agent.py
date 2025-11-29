@@ -127,15 +127,16 @@ def check_appointment_availability(ctx: RunContext[BeautyAdvisorDependencies], d
     return check_availability(date_str)
 
 @beauty_advisor_agent.tool
-def book_consultation(ctx: RunContext[BeautyAdvisorDependencies], datetime_text: str, user_name: str, contact_info: str) -> str:
+def book_consultation(ctx: RunContext[BeautyAdvisorDependencies], datetime_text: str, user_name: str, contact_info: str, treatment_name: str = "ייעוץ קוסמטי") -> str:
     """
-    קביעת תור לייעוץ.
+    קביעת תור לטיפול.
     מקבל קלט תאריך ושעה בשפה טבעית בעברית או אנגלית.
     
     Args:
         datetime_text: תאריך ושעה בשפה טבעית כמו "מחר בשעה 15:00", "tomorrow at 3pm".
         user_name: שם הלקוחה.
         contact_info: מספר טלפון או אימייל.
+        treatment_name: שם הטיפול (לדוגמה: "טיפול פנים", "הסרת שיער", "מניקור").
     
     דוגמאות:
         - "מחר בשעה 3 אחרי הצהריים" / "tomorrow at 3pm"
@@ -147,7 +148,7 @@ def book_consultation(ctx: RunContext[BeautyAdvisorDependencies], datetime_text:
     if not date_str or not time_str:
         return f"Error: Could not understand date/time '{datetime_text}'. Please include both date and time, e.g., 'tomorrow at 3pm'."
     
-    return book_appointment(date_str, time_str, user_name, contact_info)
+    return book_appointment(date_str, time_str, user_name, contact_info, treatment_name)
 
 @beauty_advisor_agent.tool
 def get_product_visual(ctx: RunContext[BeautyAdvisorDependencies], product_name: str) -> str:

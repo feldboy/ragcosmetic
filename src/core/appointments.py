@@ -55,7 +55,7 @@ def get_booked_slots_from_ics(check_date: date) -> List[str]:
 
 def check_availability(date_str: str) -> List[str]:
     """
-    Check available appointment slots for a given date using ICS feed + local bookings.
+    Check available appointment slots for a given date using Google Calendar API.
     
     Args:
         date_str: Date in "YYYY-MM-DD" format.
@@ -63,6 +63,8 @@ def check_availability(date_str: str) -> List[str]:
     Returns:
         List of available time slots in "HH:MM" format.
     """
+    from src.utils.google_calendar import check_is_slot_available
+    
     # Define working hours (10:00 to 18:00)
     working_hours = [f"{h:02d}:00" for h in range(10, 19)]
     
@@ -71,55 +73,121 @@ def check_availability(date_str: str) -> List[str]:
     except ValueError:
         return ["Error: Invalid date format."]
 
-    # 1. Get slots from ICS
-    ics_booked = get_booked_slots_from_ics(check_date)
-    
-    if "FULL_DAY" in ics_booked:
-        return []
-
-    # 2. Get slots from local mock DB
-    local_booked = local_bookings.get(date_str, [])
-    
-    # 3. Filter available
     available = []
+    tz = pytz.timezone('Asia/Jerusalem')
+    
     for slot in working_hours:
-        # Simple string matching for now. 
-        # Real implementation would check time ranges overlap.
-        if slot not in ics_booked and slot not in local_booked:
+        # Construct datetime for this slot
+        slot_dt_str = f"{date_str} {slot}"
+        slot_start = datetime.strptime(slot_dt_str, "%Y-%m-%d %H:%M")
+        slot_start = tz.localize(slot_start)
+        slot_end = slot_start + timedelta(minutes=60) # Assume 1 hour slots
+        
+        # Check if this specific slot is free
+        if check_is_slot_available(slot_start, slot_end):
             available.append(slot)
             
     return available
 
-def book_appointment(date_str: str, time_str: str, user_name: str, contact_info: str) -> str:
+def find_nearest_available_slots(date_str: str, time_str: str, num_alternatives: int = 3) -> List[str]:
     """
-    Book an appointment locally (Mock) and generate a calendar invite.
+    Find nearest available time slots around a requested time.
+    
+    Args:
+        date_str: Requested date in "YYYY-MM-DD" format.
+        time_str: Requested time in "HH:MM" format.
+        num_alternatives: Number of alternative slots to suggest.
+        
+    Returns:
+        List of available time slots in "YYYY-MM-DD HH:MM" format.
+    """
+    try:
+        requested_dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+    except ValueError:
+        return []
+    
+    alternatives = []
+    
+    # Check same day first (later slots)
+    available_today = check_availability(date_str)
+    for slot in available_today:
+        if slot > time_str:
+            alternatives.append(f"{date_str} {slot}")
+            if len(alternatives) >= num_alternatives:
+                return alternatives
+    
+    # Check next few days
+    for days_ahead in range(1, 7):
+        next_date = requested_dt + timedelta(days=days_ahead)
+        next_date_str = next_date.strftime("%Y-%m-%d")
+        available_slots = check_availability(next_date_str)
+        
+        for slot in available_slots:
+            alternatives.append(f"{next_date_str} {slot}")
+            if len(alternatives) >= num_alternatives:
+                return alternatives
+    
+    return alternatives
+
+def book_appointment(date_str: str, time_str: str, user_name: str, contact_info: str, treatment_name: str = "ייעוץ קוסמטי") -> str:
+    """
+    Book an appointment directly on Google Calendar.
+    
+    Args:
+        date_str: Date in "YYYY-MM-DD" format.
+        time_str: Time in "HH:MM" format.
+        user_name: Client name.
+        contact_info: Phone or email.
+        treatment_name: Name of the treatment/service.
     
     Returns:
-        Success message with ICS file marker for telegram bot to send.
+        Success message or error with alternatives.
     """
-    # Check availability first
-    available = check_availability(date_str)
-    if time_str not in available:
-        return f"Error: Slot {time_str} on {date_str} is not available."
-        
-    # Book locally
-    if date_str not in local_bookings:
-        local_bookings[date_str] = []
-    local_bookings[date_str].append(time_str)
+    from src.utils.google_calendar import create_calendar_event, check_is_slot_available
     
-    # Generate calendar invite
-    from src.utils.calendar_utils import create_simple_ics
+    # Parse datetime
+    try:
+        dt_str = f"{date_str} {time_str}"
+        start_dt = datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
+        tz = pytz.timezone('Asia/Jerusalem')
+        start_dt = tz.localize(start_dt)
+        end_dt = start_dt + timedelta(minutes=60) # 1 hour appointment
+    except ValueError:
+        return f"Error: Invalid date/time format."
+
+    # Double check availability
+    if not check_is_slot_available(start_dt, end_dt):
+        # Find alternative slots
+        alternatives = find_nearest_available_slots(date_str, time_str, 3)
+        
+        if alternatives:
+            alt_text = "\n".join([f"  • {alt}" for alt in alternatives[:3]])
+            return f"מצטערת, השעה {time_str} ב-{date_str} תפוסה. 😔\n\nהשעות הקרובות הפנויות:\n{alt_text}\n\nאשמח לקבוע לך באחת מהשעות האלה!"
+        else:
+            return f"מצטערת, השעה {time_str} ב-{date_str} תפוסה ואין תורים פנויים בימים הקרובים. אשמח אם תוכלי לנסות תאריך אחר."
+        
+    # Extract client email if present
+    import re
+    email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', contact_info)
+    client_email = email_match.group(0) if email_match else None
     
     try:
-        ics_path = create_simple_ics(
-            date_str=date_str,
-            time_str=time_str,
-            title=f"Beauty Consultation - {user_name}",
-            description=f"Your beauty consultation appointment with our expert advisor.\nLooking forward to meeting you!",
-            duration_minutes=15
+        event_link = create_calendar_event(
+            summary=f"{treatment_name} - {user_name}",
+            start_time=start_dt,
+            end_time=end_dt,
+            description=f"טיפול: {treatment_name}\nלקוחה: {user_name}\nיצירת קשר: {contact_info}",
+            attendee_email=client_email
         )
         
-        return f"נקבע! {date_str} {time_str}. ICS: {ics_path} ✅ CALENDAR:{ics_path}"
+        msg = f"נקבע! {date_str} {time_str}. ✅"
+        if client_email:
+            msg += "\nInvite sent to your email! 📧"
+        else:
+            msg += "\n(No email provided for invite)"
+            
+        return msg
+
     except Exception as e:
-        return f"Booked {user_name} on {date_str} at {time_str}, but couldn't generate calendar invite: {str(e)}"
+        return f"Error booking appointment: {str(e)}"
 
