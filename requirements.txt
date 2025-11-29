@@ -1,0 +1,7 @@
+pydantic-ai
+openai
+google-gepydantic-ai
+python-telegram-bot
+icalendar
+dateparser
+python-dateutil
