@@ -8,72 +8,136 @@ class Product(BaseModel):
     description: str
     benefits: str
     price: float
-    target_skin_type: List[str] # e.g., ["Dry", "Oily", "Combination", "All"]
-    target_concern: List[str] # e.g., ["Acne", "Aging", "Pigmentation", "Dehydration"]
-    image_path: Optional[str] = None # Path to product image
+    target_skin_type: List[str] # למשל: ["יבש", "שמן", "מעורב", "הכל"]
+    target_concern: List[str] # למשל: ["אקנה", "אנטי אייג'ינג", "פיגמנטציה", "יובש"]
+    image_path: Optional[str] = None # נתיב לתמונת מוצר
+    duration_hours: Optional[float] = None # משך הטיפול בשעות
 
-# Mock Data
+# נתוני דוגמה - טיפולים וקוסמטיקה
 PRODUCTS = [
     Product(
+        id="t1",
+        name="לק ג'ל קלאסי",
+        category="מניקור",
+        description="לק ג'ל מקצועי עמיד עד 3 שבועות.",
+        benefits="ציפורניים מושלמות ועמידות, צבע אחיד ומבריק שמחזיק שבועות.",
+        price=120.0,
+        target_skin_type=["הכל"],
+        target_concern=["עיצוב ציפורניים"],
+        image_path="images/products/gel_manicure.png",
+        duration_hours=2.0
+    ),
+    Product(
+        id="t2",
+        name="פדיקור ספא מפנק",
+        category="פדיקור",
+        description="טיפול פדיקור מלא עם פילינג, מסכה ועיסוי רגליים.",
+        benefits="רגליים רכות וחלקות, ציפורניים מעוצבות ומטופחות, הרגשת רעננות.",
+        price=150.0,
+        target_skin_type=["הכל"],
+        target_concern=["טיפוח רגליים"],
+        image_path="images/products/spa_pedicure.png",
+        duration_hours=1.5
+    ),
+    Product(
+        id="t3",
+        name="טיפול פנים אנטי אייג'ינג",
+        category="טיפולי פנים",
+        description="טיפול פנים מתקדם עם סרום רטינול ומסכת קולגן.",
+        benefits="החלקת קמטים וקווי הבעה, שיפור מרקם העור והחזרת גמישות.",
+        price=350.0,
+        target_skin_type=["יבש", "נורמלי"],
+        target_concern=["אנטי אייג'ינג", "קמטים"],
+        image_path="images/products/anti_aging_facial.png",
+        duration_hours=1.5
+    ),
+    Product(
+        id="t4",
+        name="טיפול אקנה ופצעונים",
+        category="טיפולי פנים",
+        description="טיפול ממוקד לטיפול באקנה ופצעונים עם חומרים מרגיעים.",
+        benefits="ניקוי עמוק של הנקבוביות, צמצום דלקות והפחתת אדמומיות.",
+        price=280.0,
+        target_skin_type=["שמן", "מעורב"],
+        target_concern=["אקנה", "פצעונים"],
+        image_path="images/products/acne_treatment.png",
+        duration_hours=1.0
+    ),
+    Product(
+        id="t5",
+        name="טיפול הבהרה ואיחוד גוון",
+        category="טיפולי פנים",
+        description="טיפול מתקדם עם ויטמין C לאיחוד גוון והבהרת כתמים.",
+        benefits="דעיכת כתמי פיגמנטציה, איחוד גוון העור וקבלת זוהר טבעי.",
+        price=320.0,
+        target_skin_type=["הכל"],
+        target_concern=["פיגמנטציה", "כתמים"],
+        image_path="images/products/brightening_facial.png",
+        duration_hours=1.5
+    ),
+    Product(
+        id="t6",
+        name="עיצוב גבות בשעווה",
+        category="עיצוב גבות",
+        description="עיצוב מקצועי של הגבות בשעווה לקו מושלם.",
+        benefits="גבות מעוצבות ומדויקות, מראה מסודר ונקי.",
+        price=60.0,
+        target_skin_type=["הכל"],
+        target_concern=["עיצוב גבות"],
+        image_path="images/products/eyebrow_wax.png",
+        duration_hours=0.5
+    ),
+    Product(
+        id="t7",
+        name="מזותרפיה לפנים",
+        category="טיפולי מזותרפיה",
+        description="זריקות ויטמינים וחומצה היאלורונית לחידוש העור.",
+        benefits="לחות עמוקה, מילוי קמטים דקים ושיפור מרקם העור.",
+        price=450.0,
+        target_skin_type=["הכל"],
+        target_concern=["אנטי אייג'ינג", "יובש"],
+        image_path="images/products/mesotherapy.png",
+        duration_hours=1.0
+    ),
+    Product(
         id="p1",
-        name="Hydra-Boost Serum",
-        category="Serum",
-        description="A lightweight serum packed with hyaluronic acid.",
-        benefits="Provides deep hydration and plumps the skin, eliminating dryness.",
-        price=45.0,
-        target_skin_type=["Dry", "Combination", "All"],
-        target_concern=["Dehydration", "Aging"],
-        image_path="images/products/serum.png"
+        name="סרום היאלורון מרוכז",
+        category="מוצרי טיפוח",
+        description="סרום קל עם חומצה היאלורונית מרוכזת.",
+        benefits="לחות עמוקה ומילוי העור, מראה נפוח וזוהר.",
+        price=180.0,
+        target_skin_type=["יבש", "מעורב", "הכל"],
+        target_concern=["יובש", "אנטי אייג'ינג"],
+        image_path="images/products/hyaluron_serum.png"
     ),
     Product(
         id="p2",
-        name="Clearify Gel Cleanser",
-        category="Cleanser",
-        description="A gentle foaming cleanser with salicylic acid.",
-        benefits="Unclogs pores and reduces excess oil without stripping the skin.",
-        price=25.0,
-        target_skin_type=["Oily", "Combination"],
-        target_concern=["Acne", "Blackheads"],
-        image_path="images/products/cleanser.png"
+        name="קרם לילה מזין",
+        category="מוצרי טיפוח",
+        description="קרם עשיר עם ויטמינים ושמנים טבעיים.",
+        benefits="הזנה עמוקה במהלך הלילה, החלקת קמטים ושיקום העור.",
+        price=220.0,
+        target_skin_type=["יבש", "נורמלי"],
+        target_concern=["אנטי אייג'ינג", "יובש"],
+        image_path="images/products/night_cream.png"
     ),
     Product(
         id="p3",
-        name="Anti-Age Gold Cream",
-        category="Moisturizer",
-        description="Rich cream with active retinol and peptides.",
-        benefits="Smoothes fine lines and improves skin texture for a youthful look.",
-        price=85.0,
-        target_skin_type=["Dry", "Normal"],
-        target_concern=["Aging", "Wrinkles"],
-        image_path="images/products/face_cream.png"
-    ),
-    Product(
-        id="p4",
-        name="SunGuard SPF 50",
-        category="Sunscreen",
-        description="Broad-spectrum protection with a matte finish.",
-        benefits="Protects against UV damage and prevents future pigmentation.",
-        price=30.0,
-        target_skin_type=["All"],
-        target_concern=["Pigmentation", "Aging"]
-    ),
-    Product(
-        id="p5",
-        name="Brightening Vitamin C Drops",
-        category="Serum",
-        description="Potent Vitamin C serum.",
-        benefits="Fades dark spots and evens out skin tone for a radiant glow.",
-        price=55.0,
-        target_skin_type=["All"],
-        target_concern=["Pigmentation", "Dullness"],
-        image_path="images/products/vitamin_c.png"
+        name="קרם הבהרה עם ויטמין C",
+        category="מוצרי טיפוח",
+        description="קרם מבהיר עוצמתי עם ויטמין C ונגד כתמים.",
+        benefits="דעיכת כתמים, איחוד גוון ומראה זוהר.",
+        price=250.0,
+        target_skin_type=["הכל"],
+        target_concern=["פיגמנטציה", "כתמים"],
+        image_path="images/products/vitamin_c_cream.png"
     )
 ]
 
 def search_products(query: str) -> List[Product]:
     """
-    Simple search function to find products based on a query string.
-    Matches against name, category, benefits, or concerns.
+    פונקציית חיפוש פשוטה למציאת מוצרים וטיפולים לפי שאילתא.
+    מחפשת בשם, קטגוריה, תיאור או דאגות.
     """
     query = query.lower()
     results = []
@@ -81,6 +145,7 @@ def search_products(query: str) -> List[Product]:
         if (query in product.name.lower() or 
             query in product.category.lower() or 
             query in product.benefits.lower() or
+            query in product.description.lower() or
             any(query in c.lower() for c in product.target_concern)):
             results.append(product)
     return results

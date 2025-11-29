@@ -1,6 +1,6 @@
 pydantic-ai
 openai
-google-gepydantic-ai
+google-genai
 python-telegram-bot
 icalendar
 dateparser
