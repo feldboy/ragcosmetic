@@ -4,7 +4,8 @@ import logging
 import re
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
-from agent import beauty_advisor_agent, BeautyAdvisorDependencies
+from src.core.agent import beauty_advisor_agent, BeautyAdvisorDependencies
+from src.core.config import Config
 
 # Configure logging
 logging.basicConfig(
@@ -90,22 +91,29 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Retrieve history
     if chat_id not in conversations:
         conversations[chat_id] = []
-    history = conversations[chat_id]
+    
+    # הגבל את ההיסטוריה ל-10 הודעות אחרונות (5 חילופי הודעות)
+    # זה ימנע התנפחות ויאיץ את התשובות
+    history = conversations[chat_id][-10:]
     
     try:
         result = await beauty_advisor_agent.run(user_text, deps=deps, message_history=history)
         conversations[chat_id].extend(result.new_messages())
+        
+        # שמור רק 20 הודעות אחרונות בזיכרון כולל
+        conversations[chat_id] = conversations[chat_id][-20:]
+        
         await send_response(context, chat_id, result.output)
     except Exception as e:
         logging.error(f"Error in handle_message: {e}")
         await context.bot.send_message(chat_id=chat_id, text="אופס! משהו השתבש. בבקשה נסי שוב.")
 
 if __name__ == '__main__':
-    # Use the provided token or env var
-    TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8501173127:AAFrxLECyhd8_yoHSEgQsnOIgaXLpl0RGso")
-    
-    if not TOKEN:
-        print("Error: TELEGRAM_BOT_TOKEN not set.")
+    # Get token from config (reads from .env)
+    try:
+        TOKEN = Config.get_telegram_token()
+    except ValueError as e:
+        print(f"Error: {e}")
         exit(1)
         
     application = ApplicationBuilder().token(TOKEN).build()

@@ -8,7 +8,7 @@ import sys
 # Add project directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from image_manager import get_product_image, get_all_product_images
+from src.utils.image_manager import get_product_image, get_all_product_images
 from products import PRODUCTS
 
 def test_image_manager():

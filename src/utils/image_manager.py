@@ -1,6 +1,6 @@
 import os
 from typing import Optional, List
-from products import PRODUCTS, Product
+from src.core.products import PRODUCTS, Product
 
 def get_product_image(product_name: str) -> Optional[str]:
     """

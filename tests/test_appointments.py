@@ -1,5 +1,5 @@
-import unittest
-from appointments import check_availability, book_appointment, booked_slots
+import pytest
+from src.core.appointments import check_availability, book_appointment, booked_slots
 
 class TestAppointments(unittest.TestCase):
     def setUp(self):

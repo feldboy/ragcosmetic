@@ -1,6 +1,7 @@
 import asyncio
+import pytest
 import os
-from agent import beauty_advisor_agent, BeautyAdvisorDependencies
+from src.core.agent import beauty_advisor_agent, BeautyAdvisorDependencies
 
 # Mock API key if not present, just to allow import, but actual run might fail if not set.
 if "OPENROUTER_API_KEY" not in os.environ:

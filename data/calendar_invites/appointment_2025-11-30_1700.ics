@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Beauty Advisor//IL
+BEGIN:VEVENT
+SUMMARY:Beauty Consultation - עומר דיין
+DTSTART;TZID=Asia/Jerusalem:20251130T170000
+DTEND;TZID=Asia/Jerusalem:20251130T171500
+DTSTAMP:20251129T105533Z
+UID:b90b8511-3690-49da-bdd7-c7fc905b8a74@beautyadvicor.com
+DESCRIPTION:Your beauty consultation appointment with our expert advisor.\
+ nLooking forward to meeting you!
+END:VEVENT
+END:VCALENDAR

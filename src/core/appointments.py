@@ -108,7 +108,7 @@ def book_appointment(date_str: str, time_str: str, user_name: str, contact_info:
     local_bookings[date_str].append(time_str)
     
     # Generate calendar invite
-    from calendar_utils import create_simple_ics
+    from src.utils.calendar_utils import create_simple_ics
     
     try:
         ics_path = create_simple_ics(

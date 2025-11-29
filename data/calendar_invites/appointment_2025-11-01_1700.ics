@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Beauty Advisor//IL
+BEGIN:VEVENT
+SUMMARY:Beauty Consultation - ירון
+DTSTART;TZID=Asia/Jerusalem:20251101T170000
+DTEND;TZID=Asia/Jerusalem:20251101T171500
+DTSTAMP:20251129T105613Z
+UID:977e6fb0-98e7-4346-b7fb-e84a94b5f154@beautyadvicor.com
+DESCRIPTION:Your beauty consultation appointment with our expert advisor.\
+ nLooking forward to meeting you!
+END:VEVENT
+END:VCALENDAR

@@ -24,7 +24,7 @@ PRODUCTS = [
         price=120.0,
         target_skin_type=["הכל"],
         target_concern=["עיצוב ציפורניים"],
-        image_path="images/products/gel_manicure.png",
+        image_path="data/images/products/gel_manicure.png",
         duration_hours=2.0
     ),
     Product(
@@ -36,7 +36,7 @@ PRODUCTS = [
         price=150.0,
         target_skin_type=["הכל"],
         target_concern=["טיפוח רגליים"],
-        image_path="images/products/spa_pedicure.png",
+        image_path="data/images/products/spa_pedicure.png",
         duration_hours=1.5
     ),
     Product(
@@ -48,7 +48,7 @@ PRODUCTS = [
         price=350.0,
         target_skin_type=["יבש", "נורמלי"],
         target_concern=["אנטי אייג'ינג", "קמטים"],
-        image_path="images/products/anti_aging_facial.png",
+        image_path="data/images/products/anti_aging_facial.png",
         duration_hours=1.5
     ),
     Product(
@@ -60,7 +60,7 @@ PRODUCTS = [
         price=280.0,
         target_skin_type=["שמן", "מעורב"],
         target_concern=["אקנה", "פצעונים"],
-        image_path="images/products/acne_treatment.png",
+        image_path="data/images/products/acne_treatment.png",
         duration_hours=1.0
     ),
     Product(
@@ -72,7 +72,7 @@ PRODUCTS = [
         price=320.0,
         target_skin_type=["הכל"],
         target_concern=["פיגמנטציה", "כתמים"],
-        image_path="images/products/brightening_facial.png",
+        image_path="data/images/products/brightening_facial.png",
         duration_hours=1.5
     ),
     Product(
@@ -84,7 +84,7 @@ PRODUCTS = [
         price=60.0,
         target_skin_type=["הכל"],
         target_concern=["עיצוב גבות"],
-        image_path="images/products/eyebrow_wax.png",
+        image_path="data/images/products/eyebrow_wax.png",
         duration_hours=0.5
     ),
     Product(
@@ -96,7 +96,7 @@ PRODUCTS = [
         price=450.0,
         target_skin_type=["הכל"],
         target_concern=["אנטי אייג'ינג", "יובש"],
-        image_path="images/products/mesotherapy.png",
+        image_path="data/images/products/mesotherapy.png",
         duration_hours=1.0
     ),
     Product(
@@ -108,7 +108,7 @@ PRODUCTS = [
         price=180.0,
         target_skin_type=["יבש", "מעורב", "הכל"],
         target_concern=["יובש", "אנטי אייג'ינג"],
-        image_path="images/products/hyaluron_serum.png"
+        image_path="data/images/products/hyaluron_serum.png"
     ),
     Product(
         id="p2",
@@ -119,7 +119,7 @@ PRODUCTS = [
         price=220.0,
         target_skin_type=["יבש", "נורמלי"],
         target_concern=["אנטי אייג'ינג", "יובש"],
-        image_path="images/products/night_cream.png"
+        image_path="data/images/products/night_cream.png"
     ),
     Product(
         id="p3",
@@ -130,7 +130,7 @@ PRODUCTS = [
         price=250.0,
         target_skin_type=["הכל"],
         target_concern=["פיגמנטציה", "כתמים"],
-        image_path="images/products/vitamin_c_cream.png"
+        image_path="data/images/products/vitamin_c_cream.png"
     )
 ]
 

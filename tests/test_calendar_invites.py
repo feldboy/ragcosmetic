@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from calendar_utils import create_simple_ics, generate_ics_file
+from src.utils.calendar_utils import create_simple_ics, generate_ics_file
 
 def test_calendar_generation():
     print("📅 Testing Calendar Generation...")
