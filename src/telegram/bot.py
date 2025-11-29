@@ -4,8 +4,8 @@ import logging
 import re
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
-from src.core.agent import beauty_advisor_agent, BeautyAdvisorDependencies
 from src.core.config import Config
+from src.core.agent import beauty_advisor_agent, BeautyAdvisorDependencies
 
 # Configure logging
 logging.basicConfig(
@@ -40,26 +40,49 @@ async def send_response(context: ContextTypes.DEFAULT_TYPE, chat_id: int, respon
     Parse the response and send text with images/calendar files if needed.
     Supports IMAGE:path and CALENDAR:path syntax in responses.
     """
-    # Check for image markers
-    image_pattern = r'IMAGE:([^\s]+)'
-    images = re.findall(image_pattern, response_text)
+    # Log the raw response for debugging
+    logging.info(f"Raw agent response: {response_text}")
+
+    # Check for image markers (both IMAGE:path and Markdown ![alt](path))
+    # Capture non-whitespace characters for IMAGE:, and content inside () for Markdown
+    image_pattern = r'IMAGE:\s*([^\s]+)|!\[.*?\]\((.*?)\)'
+    
+    # findall will return a list of tuples [('path', ''), ('', 'path')]
+    found_images = re.findall(image_pattern, response_text)
+    
+    # Flatten and clean the list
+    images = []
+    for match in found_images:
+        # match is a tuple, take the non-empty one
+        path = match[0] if match[0] else match[1]
+        if path:
+            images.append(path)
     
     # Check for calendar markers
-    calendar_pattern = r'CALENDAR:([^\s]+)'
+    calendar_pattern = r'CALENDAR:\s*([^\s]+)'
     calendars = re.findall(calendar_pattern, response_text)
     
     # Remove markers from text
-    clean_text = re.sub(image_pattern, '', response_text)
+    # Remove IMAGE: pattern
+    clean_text = re.sub(r'IMAGE:\s*[^\s]+', '', response_text)
+    # Remove Markdown image pattern
+    clean_text = re.sub(r'!\[.*?\]\(.*?\)', '', clean_text)
+    # Remove Calendar pattern
     clean_text = re.sub(calendar_pattern, '', clean_text).strip()
     
     # Send images first
     for image_path in images:
+        # Clean up common punctuation that might adhere to the URL/Path if the LLM puts it at the end of a sentence
+        image_path = image_path.rstrip('.,;!?)]}"\'')
+        
         if os.path.exists(image_path):
             try:
                 with open(image_path, 'rb') as photo:
                     await context.bot.send_photo(chat_id=chat_id, photo=photo)
             except Exception as e:
                 logging.error(f"Error sending image {image_path}: {e}")
+        else:
+            logging.warning(f"Image path not found: {image_path}")
     
     # Send text message
     if clean_text:

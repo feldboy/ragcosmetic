@@ -66,19 +66,24 @@ SYSTEM_PROMPT = """
 
 **חשוב:**
 - אל תשתמשי ב-markdown (לא ###, לא **, לא קווים)
+- **אסור** להשתמש בתמונות בפורמט Markdown (כמו `![alt](path)`)
+- השתמשי **אך ורק** בפורמט `IMAGE:path/to/image.png`
 - אל תכתבי רשימות ארוכות
 - שלחי תמונות במקום לתאר במילים
 - דברי פשוט ובטבעיות
 """
 
 from pydantic_ai.models.openai import OpenAIModel
+from openai import AsyncOpenAI
+from src.core.config import Config
 
 # Initialize the Agent
-# Using OpenRouter
+# Using DeepSeek
 beauty_advisor_agent = Agent(
     OpenAIModel(
-        'google/gemini-flash-1.5',  # Gemini 2.5 Flash - מהיר מאוד!
-        provider='openrouter',
+        'deepseek-chat',
+        provider='deepseek',
+        # api_key is automatically read from DEEPSEEK_API_KEY env var by the provider
     ),
     deps_type=BeautyAdvisorDependencies,
     instructions=SYSTEM_PROMPT,

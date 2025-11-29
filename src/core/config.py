@@ -34,9 +34,9 @@ class Config:
         return os.environ.get("OPENROUTER_API_KEY")
     
     @staticmethod
-    def get_gemini_api_key() -> Optional[str]:
-        """Get Gemini API key from environment."""
-        return os.environ.get("GEMINI_API_KEY")
+    def get_deepseek_api_key() -> Optional[str]:
+        """Get DeepSeek API key from environment."""
+        return os.environ.get("DEEPSEEK_API_KEY")
     
     @staticmethod
     def validate_required_keys():
@@ -46,8 +46,8 @@ class Config:
         if not os.environ.get("TELEGRAM_BOT_TOKEN"):
             errors.append("TELEGRAM_BOT_TOKEN is required")
         
-        if not os.environ.get("OPENROUTER_API_KEY") and not os.environ.get("GEMINI_API_KEY"):
-            errors.append("At least one of OPENROUTER_API_KEY or GEMINI_API_KEY must be set")
+        if not os.environ.get("OPENROUTER_API_KEY") and not os.environ.get("GEMINI_API_KEY") and not os.environ.get("DEEPSEEK_API_KEY"):
+            errors.append("At least one of OPENROUTER_API_KEY, GEMINI_API_KEY, or DEEPSEEK_API_KEY must be set")
         
         if errors:
             error_msg = "\n".join(errors)
