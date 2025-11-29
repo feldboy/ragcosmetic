@@ -115,16 +115,16 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if chat_id not in conversations:
         conversations[chat_id] = []
     
-    # הגבל את ההיסטוריה ל-10 הודעות אחרונות (5 חילופי הודעות)
-    # זה ימנע התנפחות ויאיץ את התשובות
-    history = conversations[chat_id][-10:]
+    # הגבל את ההיסטוריה ל-50 הודעות אחרונות
+    # זה ימנע התנפחות ויאיץ את התשובות, אך ישמור על הקשר מספיק ארוך
+    history = conversations[chat_id][-50:]
     
     try:
         result = await beauty_advisor_agent.run(user_text, deps=deps, message_history=history)
         conversations[chat_id].extend(result.new_messages())
         
-        # שמור רק 20 הודעות אחרונות בזיכרון כולל
-        conversations[chat_id] = conversations[chat_id][-20:]
+        # שמור רק 50 הודעות אחרונות בזיכרון כולל
+        conversations[chat_id] = conversations[chat_id][-50:]
         
         await send_response(context, chat_id, result.output)
     except Exception as e:

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pytz
 import os
 import uuid
+from src.core.config import Config
 
 def generate_ics_file(
     date_str: str, 
@@ -60,7 +61,8 @@ def generate_ics_file(
     event.add('status', 'CONFIRMED')
     
     # Add organizer
-    event.add('organizer', 'mailto:beautyadvisor@example.com')
+    organizer_email = Config.get_email_sender() or 'beautyadvisor@example.com'
+    event.add('organizer', f'mailto:{organizer_email}')
     
     # Add attendee
     event.add('attendee', f'mailto:{email}')

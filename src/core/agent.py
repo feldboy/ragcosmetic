@@ -38,11 +38,23 @@ SYSTEM_PROMPT = """
    - "רוצה שאבדוק תורים פנויים?"
    - "אשלח לך תמונה של התוצאות?"
 
+**קביעת תורים:**
+1. **בדיקת זמינות (חובה!):**
+   - לפני שאת מבקשת פרטים או מציעה לקבוע, **תמיד** בדקי קודם אם התאריך/שעה פנויים באמצעות `check_appointment_availability`.
+   - אם הלקוחה אומרת "אני רוצה לקבוע למחר ב-10", קודם כל תבדקי אם פנוי.
+   - רק אם פנוי -> תמשיכי לשלב הבא.
+   - אם לא פנוי -> הציעי שעות אחרות שראית שפנויות.
+
+2. **בקשת פרטים:**
+   - רק אחרי שווידאת שיש תור פנוי והלקוחה אישרה את השעה, בקשי ממנה **כתובת אימייל**.
+   - הסבירי שאת צריכה את המייל כדי לשלוח לה את הזימון ליומן.
+   - דוגמה: "מעולה, השעה 10:00 פנויה! כדי שאוכל לשלוח לך זימון מסודר, מה המייל שלך?"
+
 **כלים זמינים:**
 - `lookup_products(query)` - מצאי מוצרים וטיפולים
 - `get_product_visual(product_name)` - **תמיד** שלחי תמונה כשממליצה על מוצר!
 - `check_appointment_availability(date_text)` - בדקי תורים (מקבל "מחר", "יום שני" וכו')
-- `book_consultation(datetime_text, name, contact)` - קבעי תור
+- `book_consultation(datetime_text, name, email)` - קבעי תור (חובה אימייל!)
 
 **דוגמאות:**
 
@@ -68,6 +80,7 @@ SYSTEM_PROMPT = """
 - אל תשתמשי ב-markdown (לא ###, לא **, לא קווים)
 - **אסור** להשתמש בתמונות בפורמט Markdown (כמו `![alt](path)`)
 - השתמשי **אך ורק** בפורמט `IMAGE:path/to/image.png`
+- אם קיבלת נתיב לקובץ יומן (`CALENDAR:path`), **חובה** לכלול אותו בתשובה הסופית בדיוק כפי שקיבלת!
 - אל תכתבי רשימות ארוכות
 - שלחי תמונות במקום לתאר במילים
 - דברי פשוט ובטבעיות
@@ -127,7 +140,7 @@ def check_appointment_availability(ctx: RunContext[BeautyAdvisorDependencies], d
     return check_availability(date_str)
 
 @beauty_advisor_agent.tool
-def book_consultation(ctx: RunContext[BeautyAdvisorDependencies], datetime_text: str, user_name: str, contact_info: str, treatment_name: str = "ייעוץ קוסמטי") -> str:
+def book_consultation(ctx: RunContext[BeautyAdvisorDependencies], datetime_text: str, user_name: str, email: str, treatment_name: str = "ייעוץ קוסמטי") -> str:
     """
     קביעת תור לטיפול.
     מקבל קלט תאריך ושעה בשפה טבעית בעברית או אנגלית.
@@ -135,7 +148,7 @@ def book_consultation(ctx: RunContext[BeautyAdvisorDependencies], datetime_text:
     Args:
         datetime_text: תאריך ושעה בשפה טבעית כמו "מחר בשעה 15:00", "tomorrow at 3pm".
         user_name: שם הלקוחה.
-        contact_info: מספר טלפון או אימייל.
+        email: כתובת האימייל של הלקוחה (חובה לשליחת זימון).
         treatment_name: שם הטיפול (לדוגמה: "טיפול פנים", "הסרת שיער", "מניקור").
     
     דוגמאות:
@@ -148,7 +161,7 @@ def book_consultation(ctx: RunContext[BeautyAdvisorDependencies], datetime_text:
     if not date_str or not time_str:
         return f"Error: Could not understand date/time '{datetime_text}'. Please include both date and time, e.g., 'tomorrow at 3pm'."
     
-    return book_appointment(date_str, time_str, user_name, contact_info, treatment_name)
+    return book_appointment(date_str, time_str, user_name, email, treatment_name)
 
 @beauty_advisor_agent.tool
 def get_product_visual(ctx: RunContext[BeautyAdvisorDependencies], product_name: str) -> str:

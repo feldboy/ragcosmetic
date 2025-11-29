@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Beauty Advisor Consultation//IL
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+SUMMARY:Beauty Consultation - טיטי
+DTSTART;TZID=Asia/Jerusalem:20251130T160000
+DTEND;TZID=Asia/Jerusalem:20251130T170000
+DTSTAMP:20251129T144308Z
+UID:6185185c-df0f-4841-af89-e98fbe8c8bbc@beautyadvisor.com
+ATTENDEE:mailto:titigimad1@gmail.com
+DESCRIPTION:Beauty consultation appointment with our expert advisor.\\nCli
+ ent: טיטי\\nEmail: titigimad1@gmail.com\\n\\nWe look forward to helpin
+ g you achieve your skincare goals!
+LOCATION:Virtual Consultation (Telegram)
+ORGANIZER:mailto:beautyadvisor@example.com
+PRIORITY:5
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Beauty Consultation Reminder
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

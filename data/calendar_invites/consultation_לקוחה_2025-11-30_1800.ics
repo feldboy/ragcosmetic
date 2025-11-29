@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Beauty Advisor Consultation//IL
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+SUMMARY:Beauty Consultation - לקוחה
+DTSTART;TZID=Asia/Jerusalem:20251130T180000
+DTEND;TZID=Asia/Jerusalem:20251130T190000
+DTSTAMP:20251129T153658Z
+UID:29d9edbb-fd03-4e70-b2f5-4543ab1eda23@beautyadvisor.com
+ATTENDEE:mailto:Yaron386@gmail.com
+DESCRIPTION:Beauty consultation appointment with our expert advisor.\\nCli
+ ent: לקוחה\\nEmail: Yaron386@gmail.com\\n\\nWe look forward to helpin
+ g you achieve your skincare goals!
+LOCATION:Virtual Consultation (Telegram)
+ORGANIZER:mailto:Yaron368@gmail.com
+PRIORITY:5
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Beauty Consultation Reminder
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

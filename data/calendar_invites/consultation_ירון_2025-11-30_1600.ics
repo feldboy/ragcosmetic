@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Beauty Advisor Consultation//IL
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+SUMMARY:Beauty Consultation - ירון
+DTSTART;TZID=Asia/Jerusalem:20251130T160000
+DTEND;TZID=Asia/Jerusalem:20251130T170000
+DTSTAMP:20251129T143547Z
+UID:2e9ceb58-7d17-41c3-b008-9a6a9202d140@beautyadvisor.com
+ATTENDEE:mailto:client@example.com
+DESCRIPTION:Beauty consultation appointment with our expert advisor.\\nCli
+ ent: ירון\\nEmail: client@example.com\\n\\nWe look forward to helping 
+ you achieve your skincare goals!
+LOCATION:Virtual Consultation (Telegram)
+ORGANIZER:mailto:beautyadvisor@example.com
+PRIORITY:5
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Beauty Consultation Reminder
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

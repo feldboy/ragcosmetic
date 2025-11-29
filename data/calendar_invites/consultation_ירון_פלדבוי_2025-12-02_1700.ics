@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Beauty Advisor Consultation//IL
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+SUMMARY:Beauty Consultation - ירון פלדבוי
+DTSTART;TZID=Asia/Jerusalem:20251202T170000
+DTEND;TZID=Asia/Jerusalem:20251202T180000
+DTSTAMP:20251129T144547Z
+UID:9d39382b-5303-4f93-acd6-acc936d9ed9a@beautyadvisor.com
+ATTENDEE:mailto:Yaron386@gmail.com
+DESCRIPTION:Beauty consultation appointment with our expert advisor.\\nCli
+ ent: ירון פלדבוי\\nEmail: Yaron386@gmail.com\\n\\nWe look forwar
+ d to helping you achieve your skincare goals!
+LOCATION:Virtual Consultation (Telegram)
+ORGANIZER:mailto:beautyadvisor@example.com
+PRIORITY:5
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Beauty Consultation Reminder
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Beauty Advisor Consultation//IL
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+SUMMARY:Beauty Consultation - ysjt
+DTSTART;TZID=Asia/Jerusalem:20251130T150000
+DTEND;TZID=Asia/Jerusalem:20251130T160000
+DTSTAMP:20251129T144059Z
+UID:44318177-d3d9-4eae-b2e6-aadf2e980323@beautyadvisor.com
+ATTENDEE:mailto:titigimad1@gmail.com
+DESCRIPTION:Beauty consultation appointment with our expert advisor.\\nCli
+ ent: ysjt\\nEmail: titigimad1@gmail.com\\n\\nWe look forward to helping yo
+ u achieve your skincare goals!
+LOCATION:Virtual Consultation (Telegram)
+ORGANIZER:mailto:beautyadvisor@example.com
+PRIORITY:5
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Beauty Consultation Reminder
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

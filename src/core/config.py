@@ -47,7 +47,44 @@ class Config:
     def get_calendar_id() -> str:
         """Get Google Calendar ID from environment."""
         return os.environ.get("CALENDAR_ID", "primary")
+
+    @staticmethod
+    def get_calendar_ics_url() -> str:
+        """Get Google Calendar private ICS URL from environment."""
+        url = os.environ.get("CALENDAR_ICS_URL")
+        if not url:
+            # Fallback to the hardcoded one for backward compatibility if not set, 
+            # but ideally it should be in env. 
+            # For now, I'll return the one found in the code to avoid breaking if user hasn't set env yet.
+            return "https://calendar.google.com/calendar/ical/titigimad1%40gmail.com/private-aa02a633d6633fa3b980bf5abe849eb0/basic.ics"
+        return url
+
+    @staticmethod
+    def get_email_sender() -> Optional[str]:
+        """Get email sender address from environment."""
+        return os.environ.get("EMAIL_SENDER")
+
+    @staticmethod
+    def get_email_password() -> Optional[str]:
+        """Get email app password from environment."""
+        return os.environ.get("EMAIL_PASSWORD")
+
+    @staticmethod
+    def get_business_owner_email() -> Optional[str]:
+        """Get business owner email from environment."""
+        return os.environ.get("BUSINESS_OWNER_EMAIL")
     
+    @staticmethod
+    def get_business_owner_email() -> Optional[str]:
+        """Get business owner email from environment."""
+        return os.environ.get("BUSINESS_OWNER_EMAIL")
+
+    @staticmethod
+    def get_google_credentials_path() -> str:
+        """Get path to Google Service Account JSON."""
+        # Default to service_account.json in project root
+        return os.environ.get("GOOGLE_CREDENTIALS_PATH", "service_account.json")
+
     @staticmethod
     def validate_required_keys():
         """Validate that all required API keys are set."""

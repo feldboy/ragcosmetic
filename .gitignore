@@ -3,6 +3,12 @@
 *.env
 !.env.example
 
+# Google Credentials
+credentials.json
+token.json
+service_account.json
+*.pickle
+
 # Python
 __pycache__/
 *.py[cod]
