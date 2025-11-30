@@ -82,7 +82,7 @@ def find_nearest_available_slots(date_str: str, time_str: str, num_alternatives:
     
     return alternatives
 
-def book_appointment(date_str: str, time_str: str, user_name: str, email: str, treatment_name: str = "ייעוץ קוסמטי") -> str:
+def book_appointment(date_str: str, time_str: str, user_name: str, email: str, treatment_name: str = "ייעוץ קוסמטי", duration_hours: float = 1.5) -> str:
     """
     Book an appointment directly on Google Calendar.
     
@@ -92,6 +92,7 @@ def book_appointment(date_str: str, time_str: str, user_name: str, email: str, t
         user_name: Client name.
         email: Client email.
         treatment_name: Name of the treatment/service.
+        duration_hours: Duration of the appointment in hours (default 1.5).
     
     Returns:
         Success message with link to event.
@@ -102,7 +103,7 @@ def book_appointment(date_str: str, time_str: str, user_name: str, email: str, t
         start_dt = datetime.datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
         tz = pytz.timezone('Asia/Jerusalem')
         start_dt = tz.localize(start_dt)
-        end_dt = start_dt + timedelta(minutes=120) # 2 hour appointment
+        end_dt = start_dt + timedelta(hours=duration_hours)  # Use dynamic duration
     except ValueError:
         return f"Error: Invalid date/time format."
 
@@ -123,7 +124,7 @@ def book_appointment(date_str: str, time_str: str, user_name: str, email: str, t
             summary=f"{treatment_name} - {user_name}",
             start_time=start_dt,
             end_time=end_dt,
-            description=f"טיפול: {treatment_name}\nלקוחה: {user_name}\nאימייל: {email}",
+            description=f"טיפול: {treatment_name}\nלקוחה: {user_name}\nאימייל: {email}\nמשך: {duration_hours} שעות",
             attendee_email=email
         )
         

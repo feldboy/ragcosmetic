@@ -165,7 +165,15 @@ def book_consultation(ctx: RunContext[BeautyAdvisorDependencies], datetime_text:
     if not date_str or not time_str:
         return f"Error: Could not understand date/time '{datetime_text}'. Please include both date and time, e.g., 'tomorrow at 3pm'."
     
-    return book_appointment(date_str, time_str, user_name, email, treatment_name)
+    # Look up treatment duration from products database
+    duration_hours = 1.5  # Default duration
+    matching_products = search_products(treatment_name)
+    if matching_products:
+        # Use the first matching product's duration if available
+        if matching_products[0].duration_hours:
+            duration_hours = matching_products[0].duration_hours
+    
+    return book_appointment(date_str, time_str, user_name, email, treatment_name, duration_hours)
 
 @beauty_advisor_agent.tool
 def get_product_visual(ctx: RunContext[BeautyAdvisorDependencies], product_name: str) -> str:
