@@ -90,14 +90,18 @@ from pydantic_ai.models.openai import OpenAIModel
 from openai import AsyncOpenAI
 from src.core.config import Config
 
-# Initialize the Agent
-# Using DeepSeek
+# Initialize the Agent using DeepSeek
+deepseek_key = Config.get_deepseek_api_key()
+if not deepseek_key:
+    raise ValueError("DEEPSEEK_API_KEY is required. Please add it to your .env file")
+
+# Set environment variable for OpenAI client to use
+os.environ['OPENAI_API_KEY'] = deepseek_key
+os.environ['OPENAI_BASE_URL'] = 'https://api.deepseek.com'
+
+# Initialize agent with DeepSeek model
 beauty_advisor_agent = Agent(
-    OpenAIModel(
-        'deepseek-chat',
-        provider='deepseek',
-        # api_key is automatically read from DEEPSEEK_API_KEY env var by the provider
-    ),
+    OpenAIModel('deepseek-chat'),
     deps_type=BeautyAdvisorDependencies,
     instructions=SYSTEM_PROMPT,
 )

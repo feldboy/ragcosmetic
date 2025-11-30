@@ -33,7 +33,7 @@ def check_availability(date_str: str) -> List[str]:
         slot_dt_str = f"{date_str} {slot}"
         slot_start = datetime.datetime.strptime(slot_dt_str, "%Y-%m-%d %H:%M")
         slot_start = tz.localize(slot_start)
-        slot_end = slot_start + timedelta(minutes=60) # Assume 1 hour slots
+        slot_end = slot_start + timedelta(minutes=120) # Assume 2 hour slots
         
         # Check if this specific slot is free
         events = calendar_manager.list_events(slot_start, slot_end)
@@ -102,7 +102,7 @@ def book_appointment(date_str: str, time_str: str, user_name: str, email: str, t
         start_dt = datetime.datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
         tz = pytz.timezone('Asia/Jerusalem')
         start_dt = tz.localize(start_dt)
-        end_dt = start_dt + timedelta(minutes=60) # 1 hour appointment
+        end_dt = start_dt + timedelta(minutes=120) # 2 hour appointment
     except ValueError:
         return f"Error: Invalid date/time format."
 
