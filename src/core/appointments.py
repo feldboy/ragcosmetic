@@ -1,64 +1,15 @@
-import requests
-from icalendar import Calendar
-from datetime import datetime, timedelta, date, time
+import datetime
+from datetime import timedelta
 import pytz
-from typing import List, Dict
-from src.utils.calendar_utils import generate_ics_file
+from typing import List
+from src.utils.google_calendar import GoogleCalendarManager
 
-from src.core.config import Config
-
-# The private ICS link provided by the user
-ICS_URL = Config.get_calendar_ics_url()
-
-def get_booked_slots_from_ics(check_date: date) -> List[str]:
-    """
-    Fetch events from the ICS feed and return booked times for the given date.
-    """
-    try:
-        response = requests.get(ICS_URL)
-        response.raise_for_status()
-        cal = Calendar.from_ical(response.content)
-        
-        booked_times = []
-        
-        for component in cal.walk():
-            if component.name == "VEVENT":
-                dtstart = component.get('dtstart').dt
-                dtend = component.get('dtend').dt
-                
-                # Handle full-day events (date objects)
-                if isinstance(dtstart, date) and not isinstance(dtstart, datetime):
-                    # If the event covers our check_date
-                    if dtstart <= check_date < dtend:
-                        return ["FULL_DAY"] # Block the whole day
-                    continue
-                
-                # Handle timezone awareness
-                if isinstance(dtstart, datetime):
-                    # Convert to local time (Asia/Jerusalem)
-                    tz = pytz.timezone('Asia/Jerusalem')
-                    if dtstart.tzinfo is None:
-                        dtstart = tz.localize(dtstart)
-                    else:
-                        dtstart = dtstart.astimezone(tz)
-                        
-                    event_date = dtstart.date()
-                    
-                    if event_date == check_date:
-                        # Extract time string "HH:MM"
-                        # We assume the event blocks this slot
-                        time_str = dtstart.strftime("%H:%M")
-                        booked_times.append(time_str)
-                        
-        return booked_times
-        
-    except Exception as e:
-        print(f"Error fetching ICS: {e}")
-        return []
+# Initialize calendar manager
+calendar_manager = GoogleCalendarManager()
 
 def check_availability(date_str: str) -> List[str]:
     """
-    Check available appointment slots for a given date using ICS feed.
+    Check available appointment slots for a given date using Google Calendar API.
     
     Args:
         date_str: Date in "YYYY-MM-DD" format.
@@ -70,20 +21,23 @@ def check_availability(date_str: str) -> List[str]:
     working_hours = [f"{h:02d}:00" for h in range(10, 19)]
     
     try:
-        check_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        check_date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
     except ValueError:
         return ["Error: Invalid date format."]
 
-    # Get booked slots from ICS
-    booked_slots = get_booked_slots_from_ics(check_date)
-    
-    if "FULL_DAY" in booked_slots:
-        return []
-        
     available = []
+    tz = pytz.timezone('Asia/Jerusalem')
     
     for slot in working_hours:
-        if slot not in booked_slots:
+        # Construct datetime for this slot
+        slot_dt_str = f"{date_str} {slot}"
+        slot_start = datetime.datetime.strptime(slot_dt_str, "%Y-%m-%d %H:%M")
+        slot_start = tz.localize(slot_start)
+        slot_end = slot_start + timedelta(minutes=60) # Assume 1 hour slots
+        
+        # Check if this specific slot is free
+        events = calendar_manager.list_events(slot_start, slot_end)
+        if not events:
             available.append(slot)
             
     return available
@@ -101,7 +55,7 @@ def find_nearest_available_slots(date_str: str, time_str: str, num_alternatives:
         List of available time slots in "YYYY-MM-DD HH:MM" format.
     """
     try:
-        requested_dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+        requested_dt = datetime.datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
     except ValueError:
         return []
     
@@ -130,7 +84,7 @@ def find_nearest_available_slots(date_str: str, time_str: str, num_alternatives:
 
 def book_appointment(date_str: str, time_str: str, user_name: str, email: str, treatment_name: str = "ייעוץ קוסמטי") -> str:
     """
-    Book an appointment by generating an ICS file.
+    Book an appointment directly on Google Calendar.
     
     Args:
         date_str: Date in "YYYY-MM-DD" format.
@@ -140,12 +94,21 @@ def book_appointment(date_str: str, time_str: str, user_name: str, email: str, t
         treatment_name: Name of the treatment/service.
     
     Returns:
-        Success message with CALENDAR: path or error with alternatives.
+        Success message with link to event.
     """
-    # Check availability first
-    available_slots = check_availability(date_str)
-    
-    if time_str not in available_slots:
+    # Parse datetime
+    try:
+        dt_str = f"{date_str} {time_str}"
+        start_dt = datetime.datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
+        tz = pytz.timezone('Asia/Jerusalem')
+        start_dt = tz.localize(start_dt)
+        end_dt = start_dt + timedelta(minutes=60) # 1 hour appointment
+    except ValueError:
+        return f"Error: Invalid date/time format."
+
+    # Double check availability
+    events = calendar_manager.list_events(start_dt, end_dt)
+    if events:
         # Find alternative slots
         alternatives = find_nearest_available_slots(date_str, time_str, 3)
         
@@ -156,44 +119,24 @@ def book_appointment(date_str: str, time_str: str, user_name: str, email: str, t
             return f"מצטערת, השעה {time_str} ב-{date_str} תפוסה ואין תורים פנויים בימים הקרובים. אשמח אם תוכלי לנסות תאריך אחר."
         
     try:
-        # Generate ICS file
-        ics_path = generate_ics_file(
-            date_str=date_str,
-            time_str=time_str,
-            user_name=user_name,
-            email=email,
-            duration_minutes=60, # Default 1 hour
-            output_dir="data/calendar_invites" # Store in data directory
+        event = calendar_manager.create_event(
+            summary=f"{treatment_name} - {user_name}",
+            start_time=start_dt,
+            end_time=end_dt,
+            description=f"טיפול: {treatment_name}\nלקוחה: {user_name}\nאימייל: {email}",
+            attendee_email=email
         )
         
-        # Send confirmation email
-        from src.utils.email_sender import EmailSender
-        email_sender = EmailSender()
-        
-        details = f"טיפול: {treatment_name}\nתאריך: {date_str}\nשעה: {time_str}"
-        email_sent = email_sender.send_appointment_confirmation(email, details, ics_path)
-        
-        msg = f"נקבע! {date_str} {time_str}. ✅\nשלחתי לך הזמנה ליומן.\nCALENDAR:{ics_path}"
-        
-        if email_sent:
-            msg += "\nוגם שלחתי לך מייל אישור! 📧"
+        if event:
+            event_link = event.get('htmlLink')
+            msg = f"נקבע! {date_str} {time_str}. ✅"
+            if email:
+                msg += "\nInvite sent to your email! 📧"
+            else:
+                msg += "\n(No email provided for invite)"
+            return msg
         else:
-            # Don't show error to user if it's just a config issue, but log it (handled in EmailSender)
-            pass
-            
-        # Notify the owner
-        try:
-            owner_email = Config.get_business_owner_email() or Config.get_email_sender()
-            if owner_email:
-                owner_details = f"לקוחה חדשה קבעה תור!\n\nשם: {user_name}\nאימייל: {email}\nטיפול: {treatment_name}\nתאריך: {date_str}\nשעה: {time_str}"
-                email_sender.send_owner_notification(owner_email, owner_details, ics_path)
-        except Exception as e:
-            print(f"Failed to notify owner: {e}")
-
-            
-        return msg
+            return "Error: Failed to create calendar event."
 
     except Exception as e:
         return f"Error booking appointment: {str(e)}"
-
-
